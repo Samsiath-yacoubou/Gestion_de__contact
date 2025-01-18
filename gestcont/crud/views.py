@@ -1,30 +1,37 @@
 from django.shortcuts import render ,get_list_or_404,redirect
 from .models import contact
 
-# Create your views here.
+
+# Lire tous les contacts
 def contact_list(request):
-     contacts = contact.objects.all()
-     return render (request,'crud/contact_list.html',{'contacts':contacts})
+    contacts = contact.objects.all()
+    return render(request, 'contacts/contact_list.html', {'contacts': contacts})
 
+# Créer un nouveau contact
 def contact_create(request):
-     if request == 'POST':
-        contacts = contact(name=request.POST['name'],email=request.POST['email'])
-        contacts.save()
-        return render(request,'crud/contact_create.html')
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        contact.objects.create(name=name, email=email, phone=phone)
+        return redirect('contact_list')
+    return render(request, 'contacts/contact_form.html')
 
-def contact_update(request,pk):
-    contacts=get_list_or_404(contact,pk=pk)
-    if request.method =='POST':
-       contacts.name = request.POST['name']
-       contacts.email = request.POST['email']
-       contacts.phone = request.POST['phone']
-       contacts.save()
-       
-       return render (request,'crud/contact_update.html',{'contacts':contacts})
+# Modifier un contact
+def contact_update(request, pk):
+    contact_instance = get_object_or_404(contact, pk=pk)
+    if request.method == 'POST':
+        contact_instance.name = request.POST['name']
+        contact_instance.email = request.POST['email']
+        contact_instance.phone = request.POST['phone']
+        contact_instance.save()
+        return redirect('contact_list')
+    return render(request, 'contacts/contact_form.html', {'contact': contact_instance})
 
-def contact_delete(request,pk):
-    contacts=get_list_or_404(contact,pk=pk)
-    if request.method =='POST':
-       contact.delete()
-       return redirect('contact_list')
-       return render(request,'crud/contact_delete.html',{'contacts':contacts})
+# Supprimer un contact
+def contact_delete(request, pk):
+    contact_instance = get_object_or_404(contact, pk=pk)
+    if request.method == 'POST':
+        contact_instance.delete()
+        return redirect('contact_list')
+    return render(request, 'contacts/contact_confirm_delete.html', {'contact': contact_instance})
