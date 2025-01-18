@@ -1,6 +1,6 @@
-from django.shortcuts import render ,get_list_or_404,redirect
-from .models import contact
 
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import contact
 
 # Lire tous les contacts
 def contact_list(request):
